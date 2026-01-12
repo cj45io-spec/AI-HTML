@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>國一考試看板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-100 overflow-hidden">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+/* ====== 【只需要改這一段：當天考程】 ====== */
+const SCHEDULE = [
+  // 這裡之後換 Day1 / Day2 / Day3
+];
+/* ======================================= */
+
+const EXAM_MESSAGES = [
+  "不會寫先跳過，寫會的",
+  "題目看清楚再作答",
+  "寫完一定要檢查",
+  "保持安靜、專心作答",
+  "剩下時間再檢查一遍"
+];
+
+function toMs(t){
+  const [h,m]=t.split(':').map(Number);
+  return h*3600000+m*60000;
+}
+
+function App(){
+  const [now,setNow]=useState(new Date());
+  const [data,setData]=useState(()=>{
+    const s=localStorage.getItem('attend');
+    return s?JSON.parse(s):{should:"",actual:"",absent:""};
+  });
+
+  useEffect(()=>{
+    const t=setInterval(()=>setNow(new Date()),1000);
+    return()=>clearInterval(t);
+  },[]);
+
+  useEffect(()=>{
+    localStorage.setItem('attend',JSON.stringify(data));
+  },[data]);
+
+  const current=useMemo(()=>{
+    const ms=now.getHours()*3600000+now.getMinutes()*60000+now.getSeconds()*1000;
+    return SCHEDULE.find(s=>ms>=toMs(s.start)&&ms<toMs(s.end));
+  },[now]);
+
+  const remain=useMemo(()=>{
+    if(!current) return null;
+    const total=toMs(current.end)-toMs(current.start);
+    const nowMs=now.getHours()*3600000+now.getMinutes()*60000+now.getSeconds()*1000;
+    return Math.max(0,Math.ceil((toMs(current.end)-nowMs)/60000));
+  },[current,now]);
+
+  return (
+    <div className="h-screen flex flex-col">
+      <div className="flex-1 flex flex-col items-center justify-center bg-white">
+        <div className="text-6xl font-black mb-4">
+          {now.toLocaleTimeString('zh-TW')}
+        </div>
+
+        {current ? (
+          <>
+            <div className="text-5xl font-black text-blue-700">
+              {current.subject}（{current.label}）
+            </div>
+            <div className={`text-4xl font-bold mt-4 ${remain<=10?'text-red-600':'text-gray-700'}`}>
+              剩餘 {remain} 分鐘
+            </div>
+          </>
+        ) : (
+          <div className="text-5xl font-black text-gray-400">自習中</div>
+        )}
+      </div>
+
+      <div className="h-1/4 bg-blue-50 flex">
+        <div className="flex-1 p-4 text-center">
+          <div>應到</div>
+          <input className="text-4xl w-full text-center bg-transparent"
+            value={data.should}
+            onChange={e=>setData({...data,should:e.target.value})}/>
+        </div>
+        <div className="flex-1 p-4 text-center">
+          <div>實到</div>
+          <input className="text-4xl w-full text-center bg-transparent"
+            value={data.actual}
+            onChange={e=>setData({...data,actual:e.target.value})}/>
+        </div>
+        <div className="flex-[2] p-4 text-center">
+          <div>未到</div>
+          <textarea className="w-full h-full text-xl bg-transparent text-center"
+            value={data.absent}
+            onChange={e=>setData({...data,absent:e.target.value})}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
