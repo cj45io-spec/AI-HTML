@@ -56,13 +56,21 @@
         // --- 設定資料 ---
         // 完整的時間表
         const SCHEDULE = [
-            { type: 'break', start: '08:30', end: '08:40', label: '準備' },
-            { type: 'exam',  start: '08:40', end: '09:20', label: '第一節' },
-            { type: 'break', start: '09:20', end: '09:30', label: '下課' },
-            { type: 'exam',  start: '09:30', end: '10:10', label: '第二節' },
-            { type: 'break', start: '10:10', end: '10:30', label: '下課 (大)' },
-            { type: 'exam',  start: '10:30', end: '11:10', label: '第三節' },
-            { type: 'break', start: '11:10', end: '11:20', label: '收卷' }
+            { type: 'break', start: '08:00', end: '08:50', label: '導師時間' },
+            { type: 'break', start: '08:50', end: '09:00', label: '準備' },
+            { type: 'break', start: '09:00', end: '10:00', label: '自修' },
+            { type: 'break', start: '10:00', end: '10:10', label: '準備' },
+            { type: 'break', start: '10:10', end: '10:40', label: '自修' },
+            { type: 'break', start: '10:40', end: '10:45', label: '準備' },
+            { type: 'exam',  start: '10:45', end: '11:45', label: '數學' },
+            { type: 'break', start: '12:45', end: '13:35', label: '自修' },
+            { type: 'break', start: '13:35', end: '13:45', label: '準備' },
+            { type: 'exam',  start: '13:45', end: '14:35', label: '歷史' },
+            { type: 'break', start: '14:35', end: '14:45', label: '準備' },
+            { type: 'break', start: '14:45', end: '15:20', label: '自修' },
+            { type: 'break', start: '15:20', end: '15:30', label: '準備' },
+            { type: 'exam',  start: '15:30', end: '16:30', label: '生物' },
+            
         ];
 
         // 僅提取考試時段供 A 區顯示使用
